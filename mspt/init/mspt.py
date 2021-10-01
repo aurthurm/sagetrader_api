@@ -4,6 +4,7 @@ from mspt.apps.users import models as user_models
 from mspt.settings import config
 from mspt.apps.mspt import schemas, models, crud
 
+
 coloredlogs.install()
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)

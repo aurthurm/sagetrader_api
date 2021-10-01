@@ -4,6 +4,7 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 from mspt.settings.database import db_session
 from .admin import create_super_user
 from .mspt import initialise_styles
+from .cot import initialise_cot
 
 coloredlogs.install()
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +17,7 @@ def initialize_mspt():
     db_status()
     create_super_user(db_session)
     initialise_styles(db_session)
+    initialise_cot(db_session)
     
     logger.info("MSPT Initializing Success :) YaY")
     return True

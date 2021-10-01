@@ -11,4 +11,9 @@ from mspt.apps.mspt.models import (
     TradeImage,
     Trade,
 )  #noqa
+from mspt.apps.cot.models import (
+    CFTCContract,
+    CFTCReport,
+)  #noqa
+
 

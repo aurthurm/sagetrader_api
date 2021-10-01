@@ -12,7 +12,9 @@ if initialize_mspt():
 
 
 
-    mspt_app = FastAPI(title=config.PROJECT_NAME, openapi_url=config.API_V1_STR + "/openapi.json")
+    mspt_app = FastAPI(
+        title=config.PROJECT_NAME,
+        openapi_url=config.API_V1_STR + "/openapi.json")
 
     # CORS
     origins = []
@@ -44,4 +46,3 @@ if initialize_mspt():
         response = await call_next(request)
         request.state.db.close()
         return response
-
