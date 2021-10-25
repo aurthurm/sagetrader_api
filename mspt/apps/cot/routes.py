@@ -25,7 +25,7 @@ db_session = Session()
 
 
 @router.get("/fetch-cot-contracts", response_model=List[schemas.CFTCContract])
-def fetch_files(
+def fetch_cot_contracts(
     *,
     db: Session = Depends(get_db),
 ):
@@ -34,7 +34,7 @@ def fetch_files(
 
 
 @router.get("/fetch-cot-reports/{contract_name}", response_model=List[schemas.CFTCReport])
-def fetch_files(
+def fetch_cot_reports(
     *,
     db: Session = Depends(get_db),
     contract_name: str,
@@ -45,9 +45,25 @@ def fetch_files(
 
 
 @router.get("/fetch-cot-pair-biases")
-def fetch_files(
+def fetch_cot_pair_biases(
     *,
     db: Session = Depends(get_db),
 ):
     reports = utils.forex_pair_biases(db_session=db)
     return reports
+
+
+@router.get("/refresh-cot-data")
+async def refresh_cot_data(
+    *,
+    db: Session = Depends(get_db),
+):
+    logger.info("Loading cot data from quandl")
+    db_cntrcts = crud.ctfc_contract.get_multi(db_session=db_session)
+    logger.info(f"Contracts to execute {db_cntrcts}")
+    for ctr in db_cntrcts:
+        logger.info(f"Fetching {ctr.name} Contract data from quandl ")
+        data_all, data_ch = utils.get_data(ctr.code)
+        logger.info(f"persisiting ...")
+        utils.persist_data(db_session, ctr, data_all, data_ch)
+    return True
