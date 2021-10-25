@@ -60,12 +60,12 @@ def fetch_cot_pair_biases(
 
 
 @router.get("/refresh-cot-data")
-async def refresh_cot_data(
+def refresh_cot_data(
     *,
     db: Session = Depends(get_db),
 ):
     logger.info("Loading cot data from quandl")
-    db_cntrcts = crud.ctfc_contract.get_multi(db_session=db_session)
+    db_cntrcts = crud.ctfc_contract.get_multi(db_session=db)
     logger.info(f"Contracts to execute {db_cntrcts}")
     for ctr in db_cntrcts:
         logger.info(f"Fetching {ctr.name} Contract data from quandl ")
