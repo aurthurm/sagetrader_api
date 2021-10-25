@@ -71,5 +71,5 @@ def refresh_cot_data(
         logger.info(f"Fetching {ctr.name} Contract data from quandl ")
         data_all, data_ch = utils.get_data(ctr.code)
         logger.info(f"persisiting ...")
-        utils.persist_data(db_session, ctr, data_all, data_ch)
+        utils.persist_data(db, ctr, data_all, data_ch)
     return True
