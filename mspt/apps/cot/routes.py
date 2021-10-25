@@ -1,3 +1,5 @@
+import logging, coloredlogs
+
 from typing import List
 import time
 from fastapi import (
@@ -19,6 +21,10 @@ from mspt.apps.cot import (
 )
 from mspt.apps.users import models as user_models
 from mspt.settings.database import get_db
+
+coloredlogs.install()
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 db_session = Session()
