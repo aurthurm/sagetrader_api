@@ -32,7 +32,7 @@ pytz==2020.1
 requests
 quandl
 SQLAlchemy==1.3.19
-starlette==0.13.6
+starlette==0.14.2
 uvicorn==0.12.0
 #uvloop==0.14.0
 websockets==9.1
