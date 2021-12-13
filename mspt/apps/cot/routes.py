@@ -73,3 +73,20 @@ async def refresh_cot_data(
         logger.info(f"persisiting ...")
         utils.persist_data(db, ctr, data_all, data_ch)
     return True
+
+
+@router.get("/refresh-cot-data-test")
+async def refresh_cot_data_test(
+    *,
+    db: Session = Depends(get_db),
+):
+    logger.info("Loading cot data from quandl")
+    db_cntrcts = crud.ctfc_contract.get_multi(db_session=db)
+    logger.info(f"Contracts to execute {db_cntrcts}")
+    for ctr in db_cntrcts:
+        if ctr.name in ["USDX", "GBP", "EUR"]:
+            logger.info(f"Fetching {ctr.name} Contract data from quandl ")
+            data_all, data_ch = utils.get_data(ctr.code)
+            logger.info(f"persisiting ...")
+            utils.persist_data(db, ctr, data_all, data_ch)
+    return True
