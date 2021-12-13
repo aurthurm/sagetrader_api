@@ -1,5 +1,6 @@
 import os
 
+
 def getenv_boolean(var_name, default_value=False):
     result = default_value
     env_value = os.getenv(var_name)
@@ -7,11 +8,13 @@ def getenv_boolean(var_name, default_value=False):
         result = env_value.upper() in ("TRUE", "1")
     return result
 
-def getenv_value(value, default_value=None):    
+
+def getenv_value(value, default_value=None):
     env_value = os.getenv(value)
     if env_value is None:
         env_value = default_value
     return env_value
+
 
 API_V1_STR = "/api/v1"
 
@@ -28,7 +31,7 @@ BACKEND_CORS_ORIGINS = os.getenv(
 )  # a string of origins separated by commas, e.g: "http://localhost, http://localhost:4200, http://localhost:3000, http://localhost:8080, http://local.dockertoolbox.tiangolo.com"
 PROJECT_NAME = os.getenv("PROJECT_NAME")
 if not PROJECT_NAME:
-	PROJECT_NAME = "FastAPI Starter Essentials"
+    PROJECT_NAME = "FastAPI Starter Essentials"
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 POSTGRES_SERVER = getenv_value("POSTGRES_SERVER", 'localhost')
@@ -37,7 +40,7 @@ POSTGRES_PASSWORD = getenv_value("POSTGRES_PASSWORD", 'mspt_access')
 POSTGRES_DB = getenv_value("POSTGRES_DB", 'mspt_db')
 
 try:
-    DATABASE_URI = os.environ['DATABASE_URL'] # Heroku
+    DATABASE_URI = os.environ['DATABASE_URL']  # Heroku
 except Exception:
     DATABASE_URI = (
         f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}/{POSTGRES_DB}"
@@ -62,16 +65,16 @@ EMAILS_ENABLED = SMTP_HOST and SMTP_PORT and EMAILS_FROM_EMAIL
 
 FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
 if not FIRST_SUPERUSER:
-	FIRST_SUPERUSER = "admin"
+    FIRST_SUPERUSER = "admin"
 FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 if not FIRST_SUPERUSER_PASSWORD:
-	FIRST_SUPERUSER_PASSWORD = "sniper123"
+    FIRST_SUPERUSER_PASSWORD = "sniper123"
 FIRST_SUPERUSER_EMAIL = os.getenv("FIRST_SUPERUSER_EMAIL")
 if not FIRST_SUPERUSER_EMAIL:
-	FIRST_SUPERUSER_EMAIL = "sniper@mspt.com"
+    FIRST_SUPERUSER_EMAIL = "sniper@mspt.com"
 
 USERS_OPEN_REGISTRATION = getenv_boolean("USERS_OPEN_REGISTRATION")
 if not USERS_OPEN_REGISTRATION:
-	USERS_OPEN_REGISTRATION = True
+    USERS_OPEN_REGISTRATION = True
 
 EMAIL_TEST_USER = "test@example.com"

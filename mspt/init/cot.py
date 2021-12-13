@@ -7,7 +7,6 @@ coloredlogs.install()
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-    
 contracts = [
     schemas.CFTCContractCreate(name="USDX", code="098662"),
     schemas.CFTCContractCreate(name="EUR", code="099741"),
@@ -28,10 +27,10 @@ contracts = [
     schemas.CFTCContractCreate(name="10 Yr TNote", code="043602"),
 ]
 
+
 def initialise_cot(db_session):
-    
     db_cntrcts = crud.ctfc_contract.get_multi(db_session=db_session)
-        
+
     logger.info("Initializing COT Data Contracts")
     for cot_in in contracts:
         cot = crud.ctfc_contract.get_by_name(db_session=db_session, name=cot_in.name)
@@ -40,12 +39,12 @@ def initialise_cot(db_session):
         else:
             logger.info(f" COT Data  exists {cot.name}")
     logger.info(" COT Data  Initialised")
-    
-    # logger.info("Loading cot data from quandl")
-    # db_cntrcts = crud.ctfc_contract.get_multi(db_session=db_session)
-    # logger.info(f"Contracts to execute {db_cntrcts}")
-    # for ctr in db_cntrcts:
-    #     logger.info(f"Fetching {ctr.name} Contract data from quandl ")
-    #     data_all, data_ch = utils.get_data(ctr.code)
-    #     logger.info(f"persisiting ...")
-    #     utils.persist_data(db_session, ctr, data_all, data_ch)
+
+    logger.info("Loading cot data from quandl")
+    db_cntrcts = crud.ctfc_contract.get_multi(db_session=db_session)
+    logger.info(f"Contracts to execute {db_cntrcts}")
+    for ctr in db_cntrcts:
+        logger.info(f"Fetching {ctr.name} Contract data from quandl ")
+        data_all, data_ch = utils.get_data(ctr.code)
+        logger.info(f"persisiting ...")
+        utils.persist_data(db_session, ctr, data_all, data_ch)
