@@ -60,7 +60,7 @@ def fetch_cot_pair_biases(
 
 
 @router.get("/refresh-cot-data")
-def refresh_cot_data(
+async def refresh_cot_data(
     *,
     db: Session = Depends(get_db),
 ):
