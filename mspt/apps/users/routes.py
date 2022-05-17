@@ -7,14 +7,14 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 
 from mspt.apps.users import models, schemas, crud
-from mspt.settings.database import  get_db
+from mspt.settings.database import get_db
 from mspt.settings.security import get_current_active_superuser, get_current_active_user
 from mspt.settings import config
 from mspt.settings.jwt import create_access_token
 
-
 from mspt.apps.common.schemas.token import Token
 from mspt.apps.users.schemas import UserLoginExtras
+
 
 class TokenWithExtras(Token, UserLoginExtras):
     pass
@@ -71,6 +71,7 @@ def create_user(
         "is_active": user.is_active,
         "is_superuser": user.is_superuser,
     }
+
 
 @router.put("/me", response_model=schemas.User)
 def update_user_me(
@@ -133,8 +134,6 @@ def create_user_open(
     user_in = schemas.UserCreate(password=password, email=email, first_name=first_name, last_name=last_name)
     user = crud.user.create(db, obj_in=user_in)
     return user
-
-
 
 
 @router.get("/{user_uid}", response_model=schemas.User)

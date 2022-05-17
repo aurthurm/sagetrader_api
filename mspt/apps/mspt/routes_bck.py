@@ -26,41 +26,42 @@ from mspt.utils.create_dirs import resolve_media_dirs_for
 router = APIRouter()
 db_session = Session()
 
+
 #
 # ........ Image Uploads Handler .........
 #
 @router.post("/uploads-handler")
 async def handle_file_uploads(
-        db: Session = Depends(get_db),
-        files: List[UploadFile] = File(...),
-        parent: str = Form(...),
-        tags: str = Form(...),
-        caption: str = Form(...)
-    ):
+    db: Session = Depends(get_db),
+    files: List[UploadFile] = File(...),
+    parent: str = Form(...),
+    tags: str = Form(...),
+    caption: str = Form(...)
+):
     parent, parent_uid = parent.split('-')
     media_dir = resolve_media_dirs_for(parent)
     images = []
 
-    for _file in files:   
+    for _file in files:
         file_path = media_dir + _file.filename
         resp = await utils.save_or_upload(
-            file_path=file_path, 
-            img_file=_file, 
+            file_path=file_path,
+            img_file=_file,
             tags=tags,
             caption=caption,
             parent=parent,
             parent_uid=parent_uid,
         )
         utils.persist_image_metadata(
-            db=db, 
+            db=db,
             parent=parent,
-            parent_uid=parent_uid, 
+            parent_uid=parent_uid,
             location=resp.get('url', None),
-            public_uid = resp.get('public_uid', None),
-            asset_uid = resp.get('asset_uid', None),
-            signature = resp.get('signature', None),
-            version = resp.get('version', None),
-            version_uid = resp.get('version_uid', None)
+            public_uid=resp.get('public_uid', None),
+            asset_uid=resp.get('asset_uid', None),
+            signature=resp.get('signature', None),
+            version=resp.get('version', None),
+            version_uid=resp.get('version_uid', None)
         )
         images = utils.get_image_response(db=db, parent=parent, parent_uid=parent_uid)
     return images
@@ -68,10 +69,10 @@ async def handle_file_uploads(
 
 @router.get("/fetch-files/{parent_uidentifier}")
 async def fetch_files(
-        *,
-        db: Session = Depends(get_db),
-        parent_uidentifier: str
-    ):
+    *,
+    db: Session = Depends(get_db),
+    parent_uidentifier: str
+):
     parent, parent_uid = parent_uidentifier.split('-')
     resolve_media_dirs_for(parent)
     images = utils.get_image_response(db=db, parent=parent, parent_uid=parent_uid)
@@ -80,10 +81,10 @@ async def fetch_files(
 
 @router.delete("/delete-file/{uidentifier}")
 async def delete_files(
-        *,
-        db: Session = Depends(get_db),
-        uidentifier: str
-    ):
+    *,
+    db: Session = Depends(get_db),
+    uidentifier: str
+):
     parent, file_uid = uidentifier.split('-')
     response = utils.delete_images(db=db, parent=parent, file_uid=file_uid)
     return response
@@ -94,10 +95,10 @@ async def delete_files(
 #
 @router.get("/instrument", response_model=List[schemas.Instrument])
 def read_instruments(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve instruments.
@@ -108,10 +109,10 @@ def read_instruments(
 
 @router.post("/instrument", response_model=schemas.Instrument)
 def create_instrument(
-        *,
-        db: Session = Depends(get_db),
-        instrument_in: schemas.InstrumentCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    instrument_in: schemas.InstrumentCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new instrument.
@@ -131,11 +132,11 @@ def create_instrument(
 
 @router.put("/instrument/{instrument_uid}", response_model=schemas.Instrument)
 def update_instrument(
-        *,
-        db: Session = Depends(get_db),
-        instrument_uid: int,
-        instrument_in: schemas.InstrumentUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    instrument_uid: int,
+    instrument_in: schemas.InstrumentUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an instrument.
@@ -152,10 +153,10 @@ def update_instrument(
 
 @router.delete("/instrument/{instrument_uid}", response_model=schemas.InstrumentDelete)
 def delete_instrument(
-        *,
-        db: Session = Depends(get_db),
-        instrument_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    instrument_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an instrument.
@@ -175,10 +176,10 @@ def delete_instrument(
 #
 @router.get("/style", response_model=List[schemas.Style])
 def read_styles(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve styles.
@@ -189,10 +190,10 @@ def read_styles(
 
 @router.post("/style", response_model=schemas.Style)
 def create_style(
-        *,
-        db: Session = Depends(get_db),
-        style_in: schemas.StyleCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    style_in: schemas.StyleCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new style.
@@ -210,11 +211,11 @@ def create_style(
 
 @router.put("/style/{style_uid}", response_model=schemas.Style)
 def update_style(
-        *,
-        db: Session = Depends(get_db),
-        style_uid: int,
-        style_in: schemas.StyleUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    style_uid: int,
+    style_in: schemas.StyleUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an style.
@@ -231,10 +232,10 @@ def update_style(
 
 @router.delete("/style/{style_uid}", response_model=schemas.StyleDelete)
 def delete_style(
-        *,
-        db: Session = Depends(get_db),
-        style_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    style_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an style.
@@ -254,16 +255,16 @@ def delete_style(
 #
 @router.get("/strategy", response_model=List[schemas.StrategyPlusStats])  # List[schemas.Strategy]
 def read_strategies(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        shared: bool = Query(False),
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    shared: bool = Query(False),
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve strategies.
     """
-    
+
     if not shared:
         strategies = crud.strategy.get_multi_for_user(db, owner_uid=current_user.uid, skip=skip, limit=limit)
     else:
@@ -302,10 +303,10 @@ def read_strategies(
 
 @router.post("/strategy", response_model=schemas.StrategyPlusStats)
 def create_strategy(
-        *,
-        db: Session = Depends(get_db),
-        strategy_in: schemas.StrategyCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    strategy_in: schemas.StrategyCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new strategy.
@@ -348,11 +349,11 @@ def create_strategy(
 
 @router.put("/strategy/{strategy_uid}", response_model=schemas.StrategyPlusStats)
 def update_strategy(
-        *,
-        db: Session = Depends(get_db),
-        strategy_uid: int,
-        strategy_in: schemas.StrategyUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    strategy_uid: int,
+    strategy_in: schemas.StrategyUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an strategy.
@@ -394,10 +395,10 @@ def update_strategy(
 
 @router.delete("/strategy/{strategy_uid}", response_model=schemas.StrategyDelete)
 def delete_strategy(
-        *,
-        db: Session = Depends(get_db),
-        strategy_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    strategy_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an strategy.
@@ -418,11 +419,11 @@ def delete_strategy(
 
 @router.get("/trade", response_model=List[schemas.Trade])
 def read_trades(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        shared: bool = Query(False),
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    shared: bool = Query(False),
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve trades.
@@ -431,7 +432,7 @@ def read_trades(
         trades = crud.trade.get_multi_for_user(db, owner_uid=current_user.uid, skip=skip, limit=limit)
     else:
         trades = crud.trade.get_multi_shared(db, public=shared, skip=skip, limit=limit)
-        
+
     for trade in trades:
         trade.date = str(trade.date)
     return trades
@@ -439,10 +440,10 @@ def read_trades(
 
 @router.post("/trade", response_model=schemas.Trade)
 def create_trade(
-        *,
-        db: Session = Depends(get_db),
-        trade_in: schemas.TradeCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    trade_in: schemas.TradeCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new trade.
@@ -455,11 +456,11 @@ def create_trade(
 
 @router.put("/trade/{trade_uid}", response_model=schemas.Trade)
 def update_trade(
-        *,
-        db: Session = Depends(get_db),
-        trade_uid: int,
-        trade_in: schemas.TradeUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    trade_uid: int,
+    trade_in: schemas.TradeUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an trade.
@@ -477,10 +478,10 @@ def update_trade(
 
 @router.delete("/trade/{trade_uid}", response_model=schemas.TradeDelete)
 def delete_trade(
-        *,
-        db: Session = Depends(get_db),
-        trade_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    trade_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an trade.
@@ -502,11 +503,11 @@ def delete_trade(
 
 @router.get("/trading-plan", response_model=List[schemas.TradingPlan])
 def read_trading_plans(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        shared: bool = Query(False),
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    shared: bool = Query(False),
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve trading plans.
@@ -520,10 +521,10 @@ def read_trading_plans(
 
 @router.post("/trading-plan", response_model=schemas.TradingPlan)
 def create_trading_plan(
-        *,
-        db: Session = Depends(get_db),
-        plan_in: schemas.TradingPlanCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    plan_in: schemas.TradingPlanCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new trading plan.
@@ -541,11 +542,11 @@ def create_trading_plan(
 
 @router.put("/trading-plan/{plan_uid}", response_model=schemas.TradingPlan)
 def update_trading_plan(
-        *,
-        db: Session = Depends(get_db),
-        plan_uid: int,
-        plan_in: schemas.TradingPlanUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    plan_uid: int,
+    plan_in: schemas.TradingPlanUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an trading_plan.
@@ -562,10 +563,10 @@ def update_trading_plan(
 
 @router.delete("/trading-plan/{plan_uid}", response_model=schemas.TradingPlanDelete)
 def delete_trading_plan(
-        *,
-        db: Session = Depends(get_db),
-        plan_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    plan_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an trading_plan.
@@ -586,10 +587,10 @@ def delete_trading_plan(
 
 @router.get("/task", response_model=List[schemas.Task])
 def read_task(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve tasks.
@@ -601,10 +602,10 @@ def read_task(
 
 @router.post("/task", response_model=schemas.Task)
 def create_task(
-        *,
-        db: Session = Depends(get_db),
-        task_in: schemas.TaskCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    task_in: schemas.TaskCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new task.
@@ -616,11 +617,11 @@ def create_task(
 
 @router.put("/task/{task_uid}", response_model=schemas.Task)
 def update_task(
-        *,
-        db: Session = Depends(get_db),
-        task_uid: int,
-        task_in: schemas.TaskUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    task_uid: int,
+    task_in: schemas.TaskUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an task.
@@ -637,10 +638,10 @@ def update_task(
 
 @router.delete("/task/{task_uid}", response_model=schemas.TaskDelete)
 def delete_task(
-        *,
-        db: Session = Depends(get_db),
-        task_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    task_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an task.
@@ -661,11 +662,11 @@ def delete_task(
 
 @router.get("/study", response_model=List[schemas.StudyWithAttrs])
 def read_study(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        shared: bool = Query(False),
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    shared: bool = Query(False),
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve studies.
@@ -679,10 +680,10 @@ def read_study(
 
 @router.post("/study", response_model=schemas.Study)
 def create_study(
-        *,
-        db: Session = Depends(get_db),
-        study_in: schemas.StudyCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    study_in: schemas.StudyCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new study.
@@ -694,11 +695,11 @@ def create_study(
 
 @router.put("/study/{study_uid}", response_model=schemas.Study)
 def update_study(
-        *,
-        db: Session = Depends(get_db),
-        study_uid: int,
-        study_in: schemas.StudyUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    study_uid: int,
+    study_in: schemas.StudyUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an study.
@@ -715,10 +716,10 @@ def update_study(
 
 @router.delete("/study/{study_uid}", response_model=schemas.StudyDelete)
 def delete_study(
-        *,
-        db: Session = Depends(get_db),
-        study_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    study_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an study.
@@ -739,12 +740,12 @@ def delete_study(
 
 @router.get("/studyitems/{study_uid}", response_model=List[schemas.StudyItemWithAttrs])
 def read_studyitems(
-        *,
-        db: Session = Depends(get_db),
-        study_uid: int,
-        skip: int = 0,
-        limit: int = 100,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    study_uid: int,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve studyitems.
@@ -757,10 +758,10 @@ def read_studyitems(
 
 @router.post("/studyitems", response_model=schemas.StudyItemWithAttrs)
 def create_studyitems(
-        *,
-        db: Session = Depends(get_db),
-        studyitem_in: schemas.StudyItemCreateWithAttrs,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    studyitem_in: schemas.StudyItemCreateWithAttrs,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new studyitem.
@@ -772,11 +773,11 @@ def create_studyitems(
 
 @router.put("/studyitems/{studyitem_uid}", response_model=schemas.StudyItemWithAttrs)
 def update_studyitems(
-        *,
-        db: Session = Depends(get_db),
-        studyitem_uid: int,
-        studyitem_in: schemas.StudyItemUpdateWithAttrs,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    studyitem_uid: int,
+    studyitem_in: schemas.StudyItemUpdateWithAttrs,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an studyitems.
@@ -795,10 +796,10 @@ def update_studyitems(
 
 @router.delete("/studyitems/{studyitem_uid}", response_model=schemas.StudyItem)
 def delete_studyitems(
-        *,
-        db: Session = Depends(get_db),
-        studyitem_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    studyitem_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an studyitem.
@@ -813,20 +814,18 @@ def delete_studyitems(
     return studyitem
 
 
-
-
 #
 # ........ Attribute Routes .........
 #
 
 @router.get("/attribute/{study_uid}", response_model=List[schemas.Attribute])
 def read_attributes(
-        *,
-        db: Session = Depends(get_db),
-        study_uid: int,
-        skip: int = 0,
-        limit: int = 100,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    study_uid: int,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Retrieve Attrs.
@@ -837,10 +836,10 @@ def read_attributes(
 
 @router.post("/attribute", response_model=schemas.Attribute)
 def create_attribute(
-        *,
-        db: Session = Depends(get_db),
-        attrs_in: schemas.AttributeCreate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    attrs_in: schemas.AttributeCreate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Create new attr.
@@ -851,11 +850,11 @@ def create_attribute(
 
 @router.put("/attribute/{attr_uid}", response_model=schemas.Attribute)
 def update_attribute(
-        *,
-        db: Session = Depends(get_db),
-        attr_uid: int,
-        attr_in: schemas.AttributeUpdate,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    attr_uid: int,
+    attr_in: schemas.AttributeUpdate,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Update an attr.
@@ -872,10 +871,10 @@ def update_attribute(
 
 @router.delete("/attribute/{attr_uid}", response_model=schemas.Attribute)
 def delete_attribute(
-        *,
-        db: Session = Depends(get_db),
-        attr_uid: int,
-        current_user: user_models.User = Depends(get_current_active_user),
+    *,
+    db: Session = Depends(get_db),
+    attr_uid: int,
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Delete an attr.
@@ -896,8 +895,8 @@ def delete_attribute(
 
 @router.get("/peformance-measures")
 def trade_stats(
-        db: Session = Depends(get_db),
-        current_user: user_models.User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+    current_user: user_models.User = Depends(get_current_active_user),
 ):
     """
     Calculate Trading Statistics.

@@ -11,22 +11,29 @@ from mspt.apps.mixins.crud import CRUDMIXIN
 class CRUDInstrument(CRUDMIXIN[models.Instrument, schemas.InstrumentCreate, schemas.InstrumentUpdate]):
     def get_by_name_owner(self, db_session: Session, *, name: str, owner_uid: int) -> Optional[models.Instrument]:
         name = name.upper()
-        result = db_session.query(models.Instrument).filter(models.Instrument.name == name, models.Instrument.owner_uid == owner_uid).first()
+        result = db_session.query(models.Instrument).filter(models.Instrument.name == name,
+                                                            models.Instrument.owner_uid == owner_uid).first()
         return result
 
+
 instrument = CRUDInstrument(models.Instrument)
+
 
 class CRUDStyle(CRUDMIXIN[models.Style, schemas.StyleCreate, schemas.StyleUpdate]):
     def get_by_name(self, db_session: Session, *, name: str) -> Optional[models.Style]:
         result = db_session.query(models.Style).filter(models.Style.name == name).first()
         return result
 
+
 style = CRUDStyle(models.Style)
 
+
 class CRUDStrategy(CRUDMIXIN[models.Strategy, schemas.StrategyCreate, schemas.StrategyUpdate]):
-    def get_by_name_owner(self, db_session: Session, *, name:str, owner_uid:int) -> Optional[models.Strategy]:
-        result = db_session.query(models.Strategy).filter(models.Strategy.name == name, models.Strategy.owner_uid == owner_uid).first()
+    def get_by_name_owner(self, db_session: Session, *, name: str, owner_uid: int) -> Optional[models.Strategy]:
+        result = db_session.query(models.Strategy).filter(models.Strategy.name == name,
+                                                          models.Strategy.owner_uid == owner_uid).first()
         return result
+
 
 strategy = CRUDStrategy(models.Strategy)
 
@@ -68,12 +75,16 @@ class CRUDTrade(CRUDMIXIN[models.Trade, schemas.TradeCreate, schemas.TradeUpdate
         db_session.refresh(db_obj)
         return db_obj
 
+
 trade = CRUDTrade(models.Trade)
 
+
 class CRUDTradingPlan(CRUDMIXIN[models.TradingPlan, schemas.TradingPlanCreate, schemas.TradingPlanUpdate]):
-    def get_by_name_owner(self, db_session: Session, *, name: str, owner_uid:int) -> Optional[models.TradingPlan]:
-        result = db_session.query(models.TradingPlan).filter(models.TradingPlan.name == name, models.TradingPlan.owner_uid == owner_uid).first()
+    def get_by_name_owner(self, db_session: Session, *, name: str, owner_uid: int) -> Optional[models.TradingPlan]:
+        result = db_session.query(models.TradingPlan).filter(models.TradingPlan.name == name,
+                                                             models.TradingPlan.owner_uid == owner_uid).first()
         return result
+
 
 trading_plan = CRUDTradingPlan(models.TradingPlan)
 
@@ -83,6 +94,7 @@ class CRUDTask(CRUDMIXIN[models.Task, schemas.TaskCreate, schemas.TaskUpdate]):
         result = db_session.query(models.Task).filter(models.Task.name == name).first()
         return result
 
+
 task = CRUDTask(models.Task)
 
 
@@ -91,7 +103,9 @@ class CRUDStudy(CRUDMIXIN[models.Study, schemas.StudyCreate, schemas.StudyUpdate
         result = db_session.query(models.Study).filter(models.Study.name == name).first()
         return result
 
+
 study = CRUDStudy(models.Study)
+
 
 class CRUDStudyItem(CRUDMIXIN[models.StudyItem, schemas.StudyItemCreate, schemas.StudyItemUpdate]):
     def get_by_name(self, db_session: Session, *, name: str) -> Optional[models.StudyItem]:
@@ -99,7 +113,8 @@ class CRUDStudyItem(CRUDMIXIN[models.StudyItem, schemas.StudyItemCreate, schemas
         return result
 
     def get_multi_by_study(self, db_session: Session, *, study_uid: int, skip=0, limit=100) -> List[models.StudyItem]:
-        return db_session.query(self.model).filter(models.StudyItem.study_uid == study_uid).offset(skip).limit(limit).all()
+        return db_session.query(self.model).filter(models.StudyItem.study_uid == study_uid).offset(skip).limit(
+            limit).all()
 
     def create(self, db_session: Session, *, obj_in: schemas.StudyItemCreateWithAttrs) -> models.StudyItem:
         obj_in_data = jsonable_encoder(obj_in)
@@ -123,7 +138,8 @@ class CRUDStudyItem(CRUDMIXIN[models.StudyItem, schemas.StudyItemCreate, schemas
         db_session.refresh(db_obj)
         return db_obj
 
-    def update( self, db_session: Session, *, db_obj: models.StudyItem, obj_in: schemas.StudyItemUpdate) -> models.StudyItem:
+    def update(self, db_session: Session, *, db_obj: models.StudyItem,
+               obj_in: schemas.StudyItemUpdate) -> models.StudyItem:
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(skip_defaults=True)
         for field in obj_data:
@@ -149,6 +165,7 @@ class CRUDStudyItem(CRUDMIXIN[models.StudyItem, schemas.StudyItemCreate, schemas
         db_session.refresh(db_obj)
         return db_obj
 
+
 studyitem = CRUDStudyItem(models.StudyItem)
 
 
@@ -158,7 +175,8 @@ class CRUDAttribute(CRUDMIXIN[models.Attribute, schemas.AttributeCreate, schemas
         return result
 
     def get_multi_by_study(self, db_session: Session, *, study_uid: int, skip=0, limit=100) -> List[models.Attribute]:
-        return db_session.query(self.model).filter(models.Attribute.study_uid == study_uid).offset(skip).limit(limit).all()
+        return db_session.query(self.model).filter(models.Attribute.study_uid == study_uid).offset(skip).limit(
+            limit).all()
 
 
 attribute = CRUDAttribute(models.Attribute)

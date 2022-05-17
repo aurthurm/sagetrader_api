@@ -1,4 +1,3 @@
-
 from sqlalchemy import (
     Boolean,
     Column,
@@ -14,7 +13,6 @@ from datetime import datetime
 
 from mspt.apps.users.models import User
 from mspt.settings.database import DBModel
-
 
 
 class BaseModel(DBModel):
@@ -72,14 +70,15 @@ class Strategy(BaseModel):
     owner = relationship(User, backref="strategies")
     public = Column(Boolean(), default=False)
 
+
 class Style(BaseModel):
     # trades = relationship("Trade", back_populates="style")    
     owner_uid = Column(Integer, ForeignKey("user.uid", ondelete="CASCADE"), nullable=True)
-    owner = relationship(User, backref="styles")    
+    owner = relationship(User, backref="styles")
     public = Column(Boolean(), default=False)
 
 
-class Trade(DBModel):    
+class Trade(DBModel):
     owner_uid = Column(Integer, ForeignKey("user.uid", ondelete="CASCADE"), nullable=False)
     owner = relationship(User, backref="trades")
     date = Column(DateTime)
@@ -96,22 +95,23 @@ class Trade(DBModel):
     style = relationship("Style", backref="trades", lazy="joined")
     description = Column(String)
     # images = relationship("TradeImage", back_populates="image")
-    sl = Column(Integer) # Slop loss initial
-    tp = Column(Integer) # TP loss initial
-    tp_reached = Column(Boolean(), default=False )# Duid trade hit targeted tp
+    sl = Column(Integer)  # Slop loss initial
+    tp = Column(Integer)  # TP loss initial
+    tp_reached = Column(Boolean(), default=False)  # Duid trade hit targeted tp
     tp_exceeded = Column(Boolean(), default=False)  # Duid trade run beyond targeted tp
-    full_stop = Column(Boolean(), default=False) # Duid trade hit full stop on a loss
+    full_stop = Column(Boolean(), default=False)  # Duid trade hit full stop on a loss
     entry_price = Column(Float)
-    sl_price = Column(Float) # initial
-    tp_price = Column(Float) # initial
-    scaled_in = Column(Boolean(), default=False) # Added to existing positions
-    scaled_out = Column(Boolean(), default=False) # Duid you pay the trader
+    sl_price = Column(Float)  # initial
+    tp_price = Column(Float)  # initial
+    scaled_in = Column(Boolean(), default=False)  # Added to existing positions
+    scaled_out = Column(Boolean(), default=False)  # Duid you pay the trader
     # Are you opening a position on a instrument that is correlated  \
     # to another instrument with an open postion too?
     correlated_position = Column(Boolean(), default=False)
     public = Column(Boolean(), default=False)
 
-class TradingPlan(BaseModel):    
+
+class TradingPlan(BaseModel):
     owner_uid = Column(Integer, ForeignKey("user.uid", ondelete="CASCADE"), nullable=False)
     owner = relationship(User, backref="trading_plans")
     public = Column(Boolean(), default=False)
@@ -129,7 +129,7 @@ class StudyItemAttribute(DBModel):
     attribute_uid = Column(Integer, ForeignKey("attribute.uid"), primary_key=True)
 
 
-class Study(BaseModel):    
+class Study(BaseModel):
     owner_uid = Column(Integer, ForeignKey("user.uid", ondelete="CASCADE"), nullable=False)
     owner = relationship(User, backref="studies")
     public = Column(Boolean(), default=False)
@@ -170,11 +170,11 @@ class Attribute(BaseModel):
     Attributes: H1/D1 Config, H4/W1 Config"""
     study_uid = Column(Integer, ForeignKey("study.uid", ondelete="RESTRICT"), nullable=False)
     study = relationship("Study", backref="attributes", lazy="joined")
-    studyitems = relationship("StudyItem", secondary=lambda: StudyItemAttribute.__table__, lazy="joined")    
+    studyitems = relationship("StudyItem", secondary=lambda: StudyItemAttribute.__table__, lazy="joined")
     public = Column(Boolean(), default=False)
 
 
-class WatchList(BaseModel):    
+class WatchList(BaseModel):
     owner_uid = Column(Integer, ForeignKey("user.uid", ondelete="CASCADE"), nullable=False)
     owner = relationship(User, backref="watch_lists")
     public = Column(Boolean(), default=False)

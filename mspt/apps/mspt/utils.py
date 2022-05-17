@@ -3,8 +3,8 @@ from typing import Dict, Optional, List, Any
 import cloudinary as Cloud
 from cloudinary.exceptions import Error as CloudinaryErrorException
 from cloudinary.uploader import (
-    upload as  CloudUploader,
-    destroy as  CloudDestroy,
+    upload as CloudUploader,
+    destroy as CloudDestroy,
 )
 import io
 from PIL import Image
@@ -15,15 +15,16 @@ from fastapi import HTTPException
 from mspt.utils.create_dirs import deleteFile
 from mspt.apps.mspt import models
 
-
 Cloud.config(
-  cloud_name = 'd3sage',  
-  api_key = '979235147696769',  
-  api_secret = '4QrvbQ_BDUw32ns6WeIf6pABf6U'
+    cloud_name='d3sage',
+    api_key='979235147696769',
+    api_secret='4QrvbQ_BDUw32ns6WeIf6pABf6U'
 )
 
 PRESET_TESTING = 'mspt_testing'
 PRESET_PRODUCTION = 'mspt_osok'
+
+
 # overwrite, use_filename, unique_filename
 # upload_preset = 'mspt_testing', # mspt_osok,
 # Cloudinary Error Handling Codes
@@ -50,7 +51,7 @@ def persist_image_metadata(db: Session, parent: str, parent_uid: str, location: 
     elif parent == "strategy":
         image_obj = models.StrategyImage()
         image_obj.strategy = db.query(models.Strategy).get(int(parent_uid))
-        image_obj.strategy_uid = int(parent_uid)    
+        image_obj.strategy_uid = int(parent_uid)
     else:
         raise Exception(f"Unknown Parent: {parent}")
 
@@ -64,46 +65,45 @@ def persist_image_metadata(db: Session, parent: str, parent_uid: str, location: 
     db.add(image_obj)
     db.commit()
     db.refresh(image_obj)
-    
-    
+
+
 async def save_or_upload(
-    file_path: str, 
-    img_file, 
-    tags: str, 
-    caption:str, 
-    parent: str, 
+    file_path: str,
+    img_file,
+    tags: str,
+    caption: str,
+    parent: str,
     parent_uid: str,
     save: bool = False
-    ) -> Optional[Dict]:
-    
+) -> Optional[Dict]:
     await img_file.seek(0)
-    image = await img_file.read()        
+    image = await img_file.read()
     if save:
         """Save to local disk"""
         _image = Image.open(io.BytesIO(image))
         _image.save(file_path)
-        #response = await CloudUploader(file_path,  tags=tags) 
-    
+        # response = await CloudUploader(file_path,  tags=tags) 
+
     options = dict()
     options['tags'] = [tag.strip() for tag in tags.split(",")] if tags else []
     options['upload_preset'] = PRESET_PRODUCTION
     options['context'] = f'caption={caption}|alt={tags}'
     options['folder'] = _folder_from_preset(parent, PRESET_PRODUCTION)
-        
+
     response = None
     try:
         response = CloudUploader(image, **options)
     except CloudinaryErrorException as ce:
         raise HTTPException(
-            status_code=424, # Failed Dependency, 500 Internal server Error, # 503 Service unavailable
+            status_code=424,  # Failed Dependency, 500 Internal server Error, # 503 Service unavailable
             detail=f"Cloudinary Image Backend Error {ce}",
             headers={'X-Error': f"{ce}"}
-            )
+        )
 
     return response
 
 
-def get_image_response(db: Session, parent: str, parent_uid:str) -> List[Any]:
+def get_image_response(db: Session, parent: str, parent_uid: str) -> List[Any]:
     if parent == "studyitem":
         images = db.query(models.StudyItemImage).filter_by(studyitem_uid=int(parent_uid)).offset(0).limit(100).all()
     elif parent == "trade":
@@ -115,7 +115,7 @@ def get_image_response(db: Session, parent: str, parent_uid:str) -> List[Any]:
     return images
 
 
-def delete_images(db: Session, parent: str, file_uid: str, local:bool = False):
+def delete_images(db: Session, parent: str, file_uid: str, local: bool = False):
     obj = None
     if parent == "strategy":
         obj = db.query(models.StrategyImage).get(int(file_uid))
@@ -128,20 +128,20 @@ def delete_images(db: Session, parent: str, file_uid: str, local:bool = False):
         if deleteFile(obj.location):
             db.delete(obj)
             db.commit()
-    
+
     resp = CloudDestroy(obj.public_uid)
     if resp.get('result', '') == 'ok':
         db.delete(obj)
         db.commit()
-        
+
     return resp
-        
-    
+
+
 def _folder_from_preset(parent: str, preset: str):
     _base_folder = ""
     if preset == PRESET_PRODUCTION:
         _base_folder = "mspt"
     else:
         _base_folder = "testing"
-        
+
     return f"{_base_folder}/{parent}"

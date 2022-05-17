@@ -7,21 +7,22 @@ from fastapi import UploadFile
 
 filename = uuid.uuid4().hex
 
+
 def save_upload_file(upload_file: UploadFile, destination: Path) -> Dict:
     try:
-        upload_file.file.seek(0) 
+        upload_file.file.seek(0)
         with destination.open("wb+") as buffer:
             shutil.copyfileobj(upload_file.file, buffer)
     finally:
         upload_file.file.close()
-    
-    return { "filename": upload_file.filename, "path": Path(upload_file.name)}
+
+    return {"filename": upload_file.filename, "path": Path(upload_file.name)}
 
 
 def save_upload_file_tmp(upload_file: UploadFile) -> Path:
     try:
         suffix = Path(upload_file.filename).suffix
-        upload_file.file.seek(0) 
+        upload_file.file.seek(0)
         with NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             shutil.copyfileobj(upload_file.file, tmp)
             tmp_path = Path(tmp.name)
@@ -29,7 +30,6 @@ def save_upload_file_tmp(upload_file: UploadFile) -> Path:
         upload_file.file.close()
         # upload_file.filename
     return tmp_path
-
 
 # Exampe usage
 # tmp_path = save_upload_file_tmp(upload_file)
@@ -49,8 +49,6 @@ def save_upload_file_tmp(upload_file: UploadFile) -> Path:
 #         # create a model .....
 #         print(f"Response {i}: {response}")
 #     return {}
-
-
 
 
 # Another thing to consider with linux based OSs is the inode cache, 
