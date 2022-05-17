@@ -11,7 +11,7 @@ class User(DBModel):
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
 
-    def get_strategies(self):
+    def get_stategies(self):
         """back ref field"""
         return self.strategies
 
