@@ -1,7 +1,8 @@
-import quandl
-from mspt.apps.cot import schemas, models, crud
-quandl.ApiConfig.api_key = 'gks41zrRs1S1xSpzycdE'
-quandl.ApiConfig.verify_ssl = False
+import nasdaqdatalink
+from mspt.apps.cot import schemas, crud
+
+nasdaqdatalink.ApiConfig.api_key = "gks41zrRs1S1xSpzycdE"
+nasdaqdatalink.ApiConfig.verify_ssl = False
 
 
 def get_quandl_code(code, categ):
@@ -12,11 +13,11 @@ def get_data(cftc_code, start_date: str = None, end_date: str = None):
     quandl_code_all = get_quandl_code(cftc_code, 'L_ALL')
     quandl_code_ch = get_quandl_code(cftc_code, 'L_CHG')
     if start_date and end_date:
-        data_all = quandl.get(quandl_code_all, start_date=start_date, end_date=end_date)
-        data_ch = quandl.get(quandl_code_ch, start_date=start_date, end_date=end_date)
+        data_all = nasdaqdatalink.get(quandl_code_all, start_date=start_date, end_date=end_date)
+        data_ch = nasdaqdatalink.get(quandl_code_ch, start_date=start_date, end_date=end_date)
     else:
-        data_all = quandl.get(quandl_code_all)
-        data_ch = quandl.get(quandl_code_ch)
+        data_all = nasdaqdatalink.get(quandl_code_all)
+        data_ch = nasdaqdatalink.get(quandl_code_ch)
     return data_all, data_ch
 
 
